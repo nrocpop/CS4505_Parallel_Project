@@ -54,7 +54,7 @@
       	while (!Exit) {
             fromClient = Wait(in);
             System.out.println("Recieved: " + fromClient);
-            String parsedMsg [] = fromClient.split(Delimiter);
+            String[] parsedMsg = fromClient.split(Delimiter);
             if (fromClient.equals("exit")) {
                 Exit=true;
                 break;
@@ -72,7 +72,14 @@
                         System.out.println("Client said: " + parsedMsg[1]);
                         out.println(MessageToUpper(parsedMsg[1]));
                         break;
-                    case 2://audio file
+                    case 2://Files
+                        System.out.println("Processing File\n File Name: " + parsedMsg[1]);
+                        File newFile = new File("C:\\Users\\xbato\\Desktop\\" + parsedMsg[1]);
+                        byte[] fileBytes = Socket.getInputStream().readAllBytes();
+                        FileOutputStream fos = new FileOutputStream(newFile);
+                        fos.write(fileBytes);
+                        fos.flush();
+                        fos.close();
                         break;
                     case 3:// videos file
                         break;

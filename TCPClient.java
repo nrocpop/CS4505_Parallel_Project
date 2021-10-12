@@ -2,7 +2,7 @@
    import java.net.*;
    import java.util.Queue;
    import java.util.LinkedList;
-
+   import java.util.concurrent.TimeUnit;
 
 
    public class TCPClient{
@@ -16,12 +16,13 @@
 
 
 
-       public static void main(String[] args) throws IOException {
+       public static void main(String[] args) throws IOException,InterruptedException {
             Queue<String> messageQ = new LinkedList<String>();//currently unused
       	    boolean exit = false;
 			// Variables for setting up connection and communication
             Socket Socket = null; // socket to connect with ServerRouter
             PrintWriter Pout = null; // for writing to ServerRouter
+            ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
             BufferedReader Bout = new BufferedReader(new InputStreamReader(System.in));//for taking user input on the client
             BufferedReader in = null; // for reading form ServerRouter
 		    InetAddress addr = InetAddress.getLocalHost();
@@ -49,6 +50,7 @@
 		 BufferedReader fromFile =  new BufferedReader(reader); // reader for the string file
          String fromServer; // messages received from ServerRouter
          String fromUser; // messages sent to ServerRouter
+           byte[] buffer = new byte[4096];
 		 String address ="127.0.0.1";// destination IP (Server) default:10.5.2.109
          long t0, t1, t; // variables fo timing
 			
@@ -67,7 +69,7 @@
                 try{
                     choice = Integer.parseInt(Bout.readLine());}
                 catch(NumberFormatException e){
-
+                    System.out.println("NAN");
                 }
                 switch (choice){
                     case 1:
@@ -78,6 +80,18 @@
                         System.out.println("Response: " + in.readLine());
                         break;
                     case 2:
+                        System.out.println("Please enter file location");
+                        String location = Bout.readLine();
+                        File f = new File(location);
+                        String fName =f.getName();
+                        fromUser = "2::" + fName;
+                        Pout.println(fromUser);
+                        TimeUnit.SECONDS.wait(2000);
+                        FileInputStream fis = new FileInputStream(f);
+                        while(fis.read() != -1){
+                            byteOut.writeTo(Socket.getOutputStream());
+                        }
+                        System.out.println("File Sent");
                         break;
                     case 3:
                         break;
