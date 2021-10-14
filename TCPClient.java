@@ -86,7 +86,6 @@
                         String fName =f.getName();
                         fromUser = "2::" + fName;
                         Pout.println(fromUser);
-                        TimeUnit.SECONDS.wait(2000);
                         FileInputStream fis = new FileInputStream(f);
                         while(fis.read() != -1){
                             byteOut.writeTo(Socket.getOutputStream());

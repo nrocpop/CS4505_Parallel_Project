@@ -1,7 +1,7 @@
    import java.io.*;
    import java.net.*;
 
-    public class TCPServer {
+   public class TCPServer {
         private static boolean Exit;
         //Wait for a message to be received.
         private static String Wait(BufferedReader messageReader) throws IOException{
@@ -22,7 +22,7 @@
          BufferedReader in = null; // for reading form ServerRouter
 			InetAddress addr = InetAddress.getLocalHost();
 			String host = addr.getHostAddress(); // Server machine's IP
-			String routerName = "127.0.0.1"; // ServerRouter host name default:"j263-08.cse1.spsu.edu"
+			String routerName = "192.168.50.109"; // ServerRouter host name default:"j263-08.cse1.spsu.edu"
 			int SockNum = 5555; // port number
 
 			// Tries to connect to the ServerRouter
@@ -42,7 +42,7 @@
 				
       	// Variables for message passing
            String fromClient; // messages received from ServerRouter
-           String address ="192.168.50.109"; // destination IP (Client)
+           String address ="192.168.50.110"; // destination IP (Client)
            String Delimiter = "::";
 
            // Communication process (initial sends/receives)
@@ -73,15 +73,22 @@
                         out.println(MessageToUpper(parsedMsg[1]));
                         break;
                     case 2://Files
-                        System.out.println("Processing File\n File Name: " + parsedMsg[1]);
-                        File newFile = new File("C:\\Users\\xbato\\Desktop\\" + parsedMsg[1]);
-                        byte[] fileBytes = Socket.getInputStream().readAllBytes();
+                        byte[] buffer = new byte[16];
+                        File newFile = new File("C:\\Users\\Alex\\Desktop\\" + parsedMsg[1]);
+                        long fileSize = Long.valueOf(parsedMsg[2]);;
                         FileOutputStream fos = new FileOutputStream(newFile);
-                        fos.write(fileBytes);
-                        fos.flush();
-                        fos.close();
+                        BufferedOutputStream buffOut = new BufferedOutputStream(fos);
+                        //System.out.println("Processing File\n File Name: " + parsedMsg[1]);
+                        //System.out.print("File size: " + fileSize);
+                        int count;
+                        while((count = Socket.getInputStream().read(buffer)) != -1){
+                            fos.write(buffer);
+                            fos.flush();
+                        }
+
+                        System.out.println("Task Completed");
                         break;
-                    case 3:// videos file
+                    case 3://File from string
                         break;
                     case 4:
                         break;
