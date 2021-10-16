@@ -1,5 +1,6 @@
    import java.io.*;
    import java.net.*;
+   import java.util.Base64;
 
    public class TCPServer {
         private static boolean Exit;
@@ -14,6 +15,11 @@
             System.out.println("Server said: " + fromServer);
             return fromServer;
         }
+
+       public static byte[] DecodeBase64(String fileString){
+           byte[] decoded = Base64.getDecoder().decode(fileString);
+           return decoded;
+       }
 
        public static void main(String[] args) throws IOException {
             // Variables for setting up connection and communication
@@ -73,22 +79,19 @@
                         out.println(MessageToUpper(parsedMsg[1]));
                         break;
                     case 2://Files
-                        byte[] buffer = new byte[16];
-                        File newFile = new File("C:\\Users\\Alex\\Desktop\\" + parsedMsg[1]);
-                        long fileSize = Long.valueOf(parsedMsg[2]);;
-                        FileOutputStream fos = new FileOutputStream(newFile);
-                        BufferedOutputStream buffOut = new BufferedOutputStream(fos);
-                        //System.out.println("Processing File\n File Name: " + parsedMsg[1]);
-                        //System.out.print("File size: " + fileSize);
-                        int count;
-                        while((count = Socket.getInputStream().read(buffer)) != -1){
-                            fos.write(buffer);
-                            fos.flush();
-                        }
-
-                        System.out.println("Task Completed");
                         break;
                     case 3://File from string
+                        Base64.Decoder mimedc = Base64.getDecoder();
+                        InputStream is = mimedc.wrap(Socket.getInputStream());
+                        System.out.println("File from String");
+                        File newFile = new File("C:\\Users\\Alex\\Desktop\\" + parsedMsg[1]);
+                        FileOutputStream fos = new FileOutputStream(newFile);
+                        String Encoded = in.readLine();
+                        System.out.println("Encoded: " + Encoded);
+                        fos.write(DecodeBase64(Encoded));
+                        fos.flush();
+                        fos.close();
+                        System.out.println("Task Completed");
                         break;
                     case 4:
                         break;

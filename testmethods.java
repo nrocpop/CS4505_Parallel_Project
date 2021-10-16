@@ -21,11 +21,14 @@ public class testmethods {
 //    fos.close();
 //}
 
+
+
     public static String EncodeBase64(File f)throws IOException{
     FileInputStream fis = new FileInputStream(f);
     byte[] fileBytes =new byte[(int)f.length()];
     fis.read(fileBytes);
     String encodedFile = Base64.getEncoder().encodeToString(fileBytes);
+
     return encodedFile;
 }
 
