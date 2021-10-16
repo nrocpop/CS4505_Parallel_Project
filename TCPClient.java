@@ -1,8 +1,10 @@
    import java.io.*;
    import java.net.*;
+   import java.util.Base64;
    import java.util.Queue;
    import java.util.LinkedList;
    import java.util.concurrent.TimeUnit;
+   import java.util.stream.BaseStream;
 
 
    public class TCPClient{
@@ -13,6 +15,13 @@
                 System.out.println("Response: "+ Messages.poll());
             }
         }
+       public static String EncodeBase64(File f)throws IOException{
+           FileInputStream fis = new FileInputStream(f);
+           byte[] fileBytes =new byte[(int)f.length()];
+           fis.read(fileBytes);
+           String encodedFile = Base64.getEncoder().encodeToString(fileBytes);
+           return encodedFile;
+       }
 
 
 
@@ -27,7 +36,7 @@
             BufferedReader in = null; // for reading form ServerRouter
 		    InetAddress addr = InetAddress.getLocalHost();
 		    String host = addr.getHostAddress(); // Client machine's IP
-      	    String routerName = "192.168.50.110"; // ServerRouter host name default:"j263-08.cse1.spsu.edu"
+      	    String routerName = "192.168.50.109"; // ServerRouter host name default:"j263-08.cse1.spsu.edu"
 		    int SockNum = 5555; // port number
 			
 			// Tries to connect to the ServerRouter
@@ -46,12 +55,12 @@
             }
 				
       	// Variables for message passing	
-         Reader reader = new FileReader("C:\\Users\\Alex\\Desktop\\Test.txt");
-		 BufferedReader fromFile =  new BufferedReader(reader); // reader for the string file
+         //Reader reader = new FileReader("C:\\Users\\Alex\\Desktop\\Test.txt");
+		 //BufferedReader fromFile =  new BufferedReader(reader); // reader for the string file
          String fromServer; // messages received from ServerRouter
          String fromUser; // messages sent to ServerRouter
-           byte[] buffer = new byte[4096];
-		 String address ="127.0.0.1";// destination IP (Server) default:10.5.2.109
+
+		 String address ="192.168.50.109";// destination IP (Server) default:10.5.2.109
          long t0, t1, t; // variables fo timing
 			
 			// Communication process (initial sends/receives
@@ -80,20 +89,24 @@
                         System.out.println("Response: " + in.readLine());
                         break;
                     case 2:
+                        break;
+                    case 3:
+                        Base64.Encoder mime = Base64.getEncoder();
+                        OutputStream os = mime.wrap(Socket.getOutputStream());
                         System.out.println("Please enter file location");
                         String location = Bout.readLine();
                         File f = new File(location);
-                        String fName =f.getName();
-                        fromUser = "2::" + fName;
-                        Pout.println(fromUser);
                         FileInputStream fis = new FileInputStream(f);
-                        while(fis.read() != -1){
-                            byteOut.writeTo(Socket.getOutputStream());
-                        }
-                        System.out.println("File Sent");
+                        String fName = f.getName();
+                        long fileSize2 = f.length();
+                        fromUser = "3::" + fName;
+                        Pout.println(fromUser);
+                        Pout.println(EncodeBase64(f));
+                        os.flush();
+                        Pout.println("EndOfFile");
+                        System.out.println("file Sent: " + fileSize2);
                         break;
-                    case 3:
-                        break;
+
                     case 4:
                         exit = true;
                         break;
