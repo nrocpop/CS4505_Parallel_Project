@@ -1,3 +1,4 @@
+   import java.awt.*;
    import java.io.*;
    import java.net.*;
    import java.util.Base64;
@@ -8,17 +9,16 @@
         private static String Wait(BufferedReader messageReader) throws IOException{
             return messageReader.readLine();
         }
-
+        //returns an uppercase version of the provided string
         private static String MessageToUpper(String clientMessage){
             String fromServer; // messages sent to ServerRouter
             fromServer = clientMessage.toUpperCase(); // converting received message to upper case
             System.out.println("Server said: " + fromServer);
             return fromServer;
         }
-
+        //Decodes a Base64 string to a byte array
        public static byte[] DecodeBase64(String fileString){
-           byte[] decoded = Base64.getDecoder().decode(fileString);
-           return decoded;
+           return Base64.getDecoder().decode(fileString);
        }
 
        public static void main(String[] args) throws IOException {
@@ -56,7 +56,9 @@
 			fromClient = in.readLine();// initial receive from router (verification of connection)
 			System.out.println("ServerRouter: " + fromClient);
 			         
-			// Communication while loop messages are sent in the format (Request code)::(Message)
+			// Communication while loop messages are sent in the format [Request code]::[Message].
+            // once a message is received, it is separated in to a string array and passed into the
+           // switch statement. if the original message is the exit command then the socket is closed.
       	while (!Exit) {
             fromClient = Wait(in);
             System.out.println("Recieved: " + fromClient);
@@ -70,30 +72,38 @@
                 try{
                     request = Integer.parseInt(parsedMsg[0]);
                 }catch(NumberFormatException e){
-                   // do nothing, go to default case
+                   //If error handling happens on the server side this should return a message to the client.
+                    //otherwise, do nothing and go to default case.
                 }
                 switch(request){
-                    case 1://string to upper
+                    case 1://Returns an uppercase string to the client.
                         System.out.println("Processing String");
                         System.out.println("Client said: " + parsedMsg[1]);
                         out.println(MessageToUpper(parsedMsg[1]));
                         break;
-                    case 2://Files
+                    case 2:
+                        // open a file from the client received as [operation code]::[file name]::[file size]
+                        //file is received as a series of strings that are the file bytes encoded in Base64.
+                        //The strings are decoded and then the bytes are written to a file.
+                        File newF = new File("C:\\Users\\Alex\\Desktop\\" + parsedMsg[1]);
+                        FileOutputStream fo = new FileOutputStream(newF);
+                        String Encoded;
+                        long FSize = Long.parseLong(parsedMsg[2]);
+                        long count = 0l;
+                        byte[] partRcv;
+                        while(count <= FSize){
+                            Encoded = in.readLine();
+                            partRcv = DecodeBase64(Encoded);
+                            fo.write(partRcv);
+                            fo.flush();
+                            count += 1024l;
+                        }
+                        fo.close();
+                        out.println("Receive Complete");
+                        System.out.println("opening File...");
+                        Desktop.getDesktop().open(newF);
                         break;
-                    case 3://File from string
-                        Base64.Decoder mimedc = Base64.getDecoder();
-                        InputStream is = mimedc.wrap(Socket.getInputStream());
-                        System.out.println("File from String");
-                        File newFile = new File("C:\\Users\\Alex\\Desktop\\" + parsedMsg[1]);
-                        FileOutputStream fos = new FileOutputStream(newFile);
-                        String Encoded = in.readLine();
-                        System.out.println("Encoded: " + Encoded);
-                        fos.write(DecodeBase64(Encoded));
-                        fos.flush();
-                        fos.close();
-                        System.out.println("Task Completed");
-                        break;
-                    case 4:
+                    case 3:
                         break;
                     default:
                         break;
