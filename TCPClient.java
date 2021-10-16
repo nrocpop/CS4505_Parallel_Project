@@ -23,12 +23,16 @@
            return encodedFile;
        }
 
+       public static String EncodeBase64(byte[] b)throws IOException{
+           return Base64.getEncoder().encodeToString(b);
+
+       }
+
 
 
        public static void main(String[] args) throws IOException,InterruptedException {
-            Queue<String> messageQ = new LinkedList<String>();//currently unused
-      	    boolean exit = false;
-			// Variables for setting up connection and communication
+           // Variables for setting up connection and communication
+            boolean exit = false;
             Socket Socket = null; // socket to connect with ServerRouter
             PrintWriter Pout = null; // for writing to ServerRouter
             ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
@@ -54,9 +58,7 @@
                System.exit(1);
             }
 				
-      	// Variables for message passing	
-         //Reader reader = new FileReader("C:\\Users\\Alex\\Desktop\\Test.txt");
-		 //BufferedReader fromFile =  new BufferedReader(reader); // reader for the string file
+      	// Variables for message passing
          String fromServer; // messages received from ServerRouter
          String fromUser; // messages sent to ServerRouter
 
@@ -73,8 +75,7 @@
             while(!exit){
                 fromServer = null;
                 int choice = 999;
-                CheckMsg(messageQ);
-                System.out.println("select option:\n1:uppercase string\n2:play audio\n3:play video\n4:close connection");
+                System.out.println("select option:\n1:uppercase string\n2:send file\n3:close connection");
                 try{
                     choice = Integer.parseInt(Bout.readLine());}
                 catch(NumberFormatException e){
@@ -89,25 +90,27 @@
                         System.out.println("Response: " + in.readLine());
                         break;
                     case 2:
+                        System.out.println("Please enter file location");
+                        String fPath = Bout.readLine();
+                        File newF = new File(fPath);
+                        FileInputStream fi = new FileInputStream(newF);
+                        String Fname1 = newF.getName();
+                        long Size = newF.length();
+                        long count = 0l;
+                        byte[] partSend = new byte[1024];
+                        fromUser = "2::" + Fname1 + "::" + Size;
+                        Pout.println(fromUser);
+                        String encoded;
+                        while(count <= Size){
+                            fi.read(partSend);
+                            Pout.println(EncodeBase64(partSend));
+                            count += 1024l;
+                        }
+                        fi.close();
+                        fromServer = in.readLine();
+                        System.out.println(fromServer);
                         break;
                     case 3:
-                        Base64.Encoder mime = Base64.getEncoder();
-                        OutputStream os = mime.wrap(Socket.getOutputStream());
-                        System.out.println("Please enter file location");
-                        String location = Bout.readLine();
-                        File f = new File(location);
-                        FileInputStream fis = new FileInputStream(f);
-                        String fName = f.getName();
-                        long fileSize2 = f.length();
-                        fromUser = "3::" + fName;
-                        Pout.println(fromUser);
-                        Pout.println(EncodeBase64(f));
-                        os.flush();
-                        Pout.println("EndOfFile");
-                        System.out.println("file Sent: " + fileSize2);
-                        break;
-
-                    case 4:
                         exit = true;
                         break;
                     default:
@@ -117,22 +120,6 @@
 
 
             }
-//			 //Communication while loop
-//         while ((fromServer = in.readLine()) != null) {
-//            System.Pout.println("Server: " + fromServer);
-//				t1 = System.currentTimeMillis();
-//            if (fromServer.equals("Bye.")) // exit statement
-//               break;
-//				t = t1 - t0;
-//				System.Pout.println("Cycle time: " + t);
-//
-//            fromUser = fromFile.readLine(); // reading strings from a file
-//            if (fromUser != null) {
-//               System.Pout.println("Client: " + fromUser);
-//               Pout.println(fromUser); // sending the strings to the Server via ServerRouter
-//					t0 = System.currentTimeMillis();
-//            }
-//         }
       	
 			// closing connections
          Pout.close();

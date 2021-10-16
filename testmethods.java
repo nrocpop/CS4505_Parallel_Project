@@ -46,8 +46,8 @@ public static byte[] DecodeBase64(String fileString){
         byte[] partRcv = new byte[1024];
         FileOutputStream fos = new FileOutputStream(myCopy);
         String Encoded;
-        Long current = 0l;
-        Long FileSize = myFile.length();
+        long current = 0l;
+        long FileSize = myFile.length();
 
         while(current <= FileSize) {
 
