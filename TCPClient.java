@@ -25,7 +25,6 @@
 
        public static String EncodeBase64(byte[] b)throws IOException{
            return Base64.getEncoder().encodeToString(b);
-
        }
 
 

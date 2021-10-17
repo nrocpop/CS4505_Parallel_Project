@@ -2,8 +2,10 @@
    import java.io.*;
    import java.net.*;
    import java.util.Base64;
+   import java.util.Timer;
 
    public class TCPServer {
+
         private static boolean Exit;
         //Wait for a message to be received.
         private static String Wait(BufferedReader messageReader) throws IOException{
@@ -23,6 +25,7 @@
 
        public static void main(String[] args) throws IOException {
             // Variables for setting up connection and communication
+           long startTime,endTime;//timer variable
          Socket Socket = null; // socket to connect with ServerRouter
          PrintWriter out = null; // for writing to ServerRouter
          BufferedReader in = null; // for reading form ServerRouter
@@ -61,6 +64,7 @@
            // switch statement. if the original message is the exit command then the socket is closed.
       	while (!Exit) {
             fromClient = Wait(in);
+            startTime = System.currentTimeMillis();
             System.out.println("Recieved: " + fromClient);
             String[] parsedMsg = fromClient.split(Delimiter);
             if (fromClient.equals("exit")) {
@@ -77,9 +81,12 @@
                 }
                 switch(request){
                     case 1://Returns an uppercase string to the client.
+
                         System.out.println("Processing String");
                         System.out.println("Client said: " + parsedMsg[1]);
                         out.println(MessageToUpper(parsedMsg[1]));
+                        endTime = System.currentTimeMillis();
+                        System.out.println("Operation Time: " + (endTime - startTime));
                         break;
                     case 2:
                         // open a file from the client received as [operation code]::[file name]::[file size]
@@ -102,6 +109,9 @@
                         out.println("Receive Complete");
                         System.out.println("opening File...");
                         Desktop.getDesktop().open(newF);
+                        endTime = System.currentTimeMillis();
+                        System.out.print("Operation Time: " + (endTime - startTime) + " ");
+                        System.out.println("Transfer rate: " + ((FSize/(endTime-startTime))/1000) + "MBps");
                         break;
                     case 3:
                         break;
