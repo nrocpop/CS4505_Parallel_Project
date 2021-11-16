@@ -1,8 +1,20 @@
 import java.io.*;
 import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.Base64;
 
 public class ClientView extends Thread {
+    boolean exit = false;
+    Socket Socket = null; // socket to connect with ServerRouter
+    PrintWriter Pout = null; // for writing to ServerRouter
+    ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
+    BufferedReader Bout = new BufferedReader(new InputStreamReader(System.in));//for taking user input on the client
+    BufferedReader in = null; // for reading form ServerRouter
+    String routerName = "10.100.91.67"; // ServerRouter host name default:"j263-08.cse1.spsu.edu"
+    int SockNum = 5555; // port number
+    String fromServer; // messages received from ServerRouter
+    String fromUser; // messages sent to ServerRouter
+
     public static String EncodeBase64(File f)throws IOException{
         FileInputStream fis = new FileInputStream(f);
         byte[] fileBytes =new byte[(int)f.length()];
@@ -19,20 +31,23 @@ public class ClientView extends Thread {
     }
 
     public void run()  {
+        try{
+            Thread.currentThread().sleep(10000);
+        }
+        catch(InterruptedException ie){
+            System.out.println("Thread interrupted");
+        }
+        try{
+
+            Socket = new Socket(routerName, SockNum);
+            Pout = new PrintWriter(Socket.getOutputStream(), true);
+            in = new BufferedReader(new InputStreamReader(Socket.getInputStream()));
+        }catch (IOException uh){
+            System.out.println(uh);
+        }
         try {
-            boolean exit = false;
-            Socket Socket = null; // socket to connect with ServerRouter
-            PrintWriter Pout = null; // for writing to ServerRouter
-            ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
-            BufferedReader Bout = new BufferedReader(new InputStreamReader(System.in));//for taking user input on the client
-            BufferedReader in = null; // for reading form ServerRouter
-            String routerName = "192.168.50.109"; // ServerRouter host name default:"j263-08.cse1.spsu.edu"
-            int SockNum = 5555; // port number
-            String fromServer; // messages received from ServerRouter
-            String fromUser; // messages sent to ServerRouter
 
             while (!exit) {
-                System.out.println("hi");
                 fromServer = null;
                 int choice = 999;
                 System.out.println("select option:\n1:uppercase string\n2:send file\n3:close connection");

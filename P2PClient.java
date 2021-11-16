@@ -34,8 +34,8 @@ public class P2PClient extends Thread {
 
     public static void main(String[] args){
         System.out.println("Wait");
-    Thread Client = new ClientView();
-    Client.start();
+        Thread Client = new ClientView();
+        Client.start();
 
 
 }}
