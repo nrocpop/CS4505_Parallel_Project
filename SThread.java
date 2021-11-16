@@ -10,7 +10,7 @@ public class SThread extends Thread
    private BufferedReader in; // reader (for reading from the machine connected to)
 	private String inputLine, outputLine, destination, addr; // communication strings
 	private Socket outSocket; // socket for communicating with a destination
-	private int ind; // indext in the routing table
+	private int ind; // index t in the routing table
 
 	// Constructor
 	SThread(Object [][] Table, Socket toClient, int index) throws IOException
@@ -19,7 +19,7 @@ public class SThread extends Thread
 			in = new BufferedReader(new InputStreamReader(toClient.getInputStream()));
 			RTable = Table;
 			addr = toClient.getInetAddress().getHostAddress();
-			RTable[index][0] = addr; // IP addresses 
+			RTable[index][0] = addr; // IP addresses
 			RTable[index][1] = toClient; // sockets for communication
 			ind = index;
 	}

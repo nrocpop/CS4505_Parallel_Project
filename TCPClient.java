@@ -63,7 +63,7 @@
 
 		 String address ="192.168.50.109";// destination IP (Server) default:10.5.2.109
          long t0, t1, t; // variables fo timing
-			
+
 			// Communication process (initial sends/receives
 			Pout.println(address);// initial send (IP of the destination Server)
 			fromServer = in.readLine();//initial receive from router (verification of connection)
@@ -96,14 +96,14 @@
                         String Fname1 = newF.getName();
                         long Size = newF.length();
                         long count = 0l;
-                        byte[] partSend = new byte[1024];
+                        byte[] partSend = new byte[8192];
                         fromUser = "2::" + Fname1 + "::" + Size;
                         Pout.println(fromUser);
                         String encoded;
                         while(count <= Size){
                             fi.read(partSend);
                             Pout.println(EncodeBase64(partSend));
-                            count += 1024l;
+                            count += partSend.length;
                         }
                         fi.close();
                         fromServer = in.readLine();
@@ -111,6 +111,7 @@
                         break;
                     case 3:
                         exit = true;
+                        Pout.println("exit");
                         break;
                     default:
                         System.out.println("Invalid Selection");
