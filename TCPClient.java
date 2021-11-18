@@ -33,6 +33,7 @@
            // Variables for setting up connection and communication
             boolean exit = false;
             Socket Socket = null; // socket to connect with ServerRouter
+            Socket bSocket = null;
             PrintWriter Pout = null; // for writing to ServerRouter
             ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
             BufferedReader Bout = new BufferedReader(new InputStreamReader(System.in));//for taking user input on the client

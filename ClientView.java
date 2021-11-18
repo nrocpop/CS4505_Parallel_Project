@@ -1,16 +1,18 @@
 import java.io.*;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Base64;
 
-public class ClientView extends Thread {
+public class ClientView implements Runnable {
     boolean exit = false;
     Socket Socket = null; // socket to connect with ServerRouter
+    ServerSocket myServer = null;
     PrintWriter Pout = null; // for writing to ServerRouter
     ByteArrayOutputStream byteOut = new ByteArrayOutputStream();
     BufferedReader Bout = new BufferedReader(new InputStreamReader(System.in));//for taking user input on the client
     BufferedReader in = null; // for reading form ServerRouter
-    String routerName = "10.100.91.67"; // ServerRouter host name default:"j263-08.cse1.spsu.edu"
+    String routerName = "192.168.50.110"; // ServerRouter host name default:"j263-08.cse1.spsu.edu"
     int SockNum = 5555; // port number
     String fromServer; // messages received from ServerRouter
     String fromUser; // messages sent to ServerRouter
@@ -32,21 +34,8 @@ public class ClientView extends Thread {
 
     public void run()  {
         try{
-            Thread.currentThread().sleep(10000);
-        }
-        catch(InterruptedException ie){
-            System.out.println("Thread interrupted");
-        }
-        try{
-
-            Socket = new Socket(routerName, SockNum);
-            Pout = new PrintWriter(Socket.getOutputStream(), true);
-            in = new BufferedReader(new InputStreamReader(Socket.getInputStream()));
-        }catch (IOException uh){
-            System.out.println(uh);
-        }
-        try {
-
+            myServer = new ServerSocket(5555);
+            Recieving myReciever = new Recieving(this);
             while (!exit) {
                 fromServer = null;
                 int choice = 999;
@@ -89,6 +78,17 @@ public class ClientView extends Thread {
                         exit = true;
                         Pout.println("exit");
                         break;
+                    case 4://new Connection
+                        System.out.println("Please enter IP");
+                        String ipAddress = Bout.readLine();
+                        int sNumber = Integer.parseInt(Bout.readLine());
+                        try{
+                            Socket = new Socket(routerName, SockNum);
+                            Pout = new PrintWriter(Socket.getOutputStream(), true);
+                            in = new BufferedReader(new InputStreamReader(Socket.getInputStream()));
+                        }catch (IOException uh){
+                            System.out.println(uh);
+                        }
                     default:
                         System.out.println("Invalid Selection");
                         break;

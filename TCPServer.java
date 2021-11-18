@@ -103,7 +103,7 @@
                             partRcv = DecodeBase64(Encoded);
                             fo.write(partRcv);
                             fo.flush();
-                            count += 1024l;
+                            count += partRcv.length;
                         }
                         fo.close();
                         out.println("Receive Complete");
