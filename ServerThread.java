@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.io.*;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 
@@ -20,7 +21,7 @@ public class ServerThread extends Thread{
     public void run() {
         boolean Exit = false;
         String RouterAddress = "127.0.0.1";
-        String myAddress = "127.0.0.1";
+        String myAddress = "192.168.50.109";
         long startTime,endTime;//timer variable
         Socket CommSocket = null; // socket to connect with ServerRouter
         PrintWriter out = null; // for writing to ServerRouter
@@ -33,16 +34,17 @@ public class ServerThread extends Thread{
             CommSocket = new Socket(RouterAddress,5555);
             out = new PrintWriter(CommSocket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(CommSocket.getInputStream()));
-            out.write("1::" + ServerPort);
+            Thread.currentThread().sleep(2000);
+            out.println("1::" + myAddress + "::" + ServerPort);
 
         }
-        catch(IOException e){
+        catch(IOException | InterruptedException e){
 
         }
 
         try{
             ServerSocket SSocket = new ServerSocket(ServerPort);
-            Socket CommunicationSocket = SSocket.accept();
+            CommSocket = SSocket.accept();
             out = new PrintWriter(CommSocket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(CommSocket.getInputStream()));
         }

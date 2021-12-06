@@ -16,6 +16,7 @@ public class SThread extends Thread
 	String Delimiter = "::";
 
 
+
 	// Constructor
 	SThread(Object [][] Table, Socket toClient, int index) throws IOException
 	{
@@ -24,26 +25,38 @@ public class SThread extends Thread
 			RTable = Table;
 			ClientSocket = toClient;
 			ind = index;
+
 	}
 	
 	// Run method (will run for each machine that connects to the ServerRouter)
 	public void run()
 	{
+		System.out.print("Running Sthread");
 		try
 		{
+			System.out.print("Getting s Array");
 		String[] s = in.readLine().split(Delimiter);//check user type. 0 is client, 1 is server
+			System.out.print("S Resolved");
+
 			if(Integer.parseInt(s[0]) == 0){
 				for (int i = 0; i < RTable.length; i++) {
 					if(RTable[i][0].equals(s[1])){
-						out.write((int)RTable[i][1]);
+						System.out.println("Found Server at " + RTable[i][0]);
+						out.println(RTable[i][1]);
 					}
 				}
 			}
 			else{
-				RTable[ind][0] = ClientSocket.getInetAddress().getHostAddress();
+				System.out.println("Writing server to router table" + s[1] +"::" + s[2]);
+				RTable[ind][0] = s[1];//server ip address
+				RTable[ind][1] = s[2];//server port
+				System.out.println(RTable[ind][0].toString());
+				System.out.println(RTable[ind][1].toString());
 			}
          }catch (IOException e){
 			e.printStackTrace();
 		}
+
+
 	}
 }

@@ -16,7 +16,7 @@ public class ClientThread extends Thread{
         BufferedReader Bout = new BufferedReader(new InputStreamReader(System.in));//for taking user input on the client
         // Connecting to router
         try {
-            Socket RSocket = new Socket("192.168.50.110",5555);
+            Socket RSocket = new Socket("192.168.50.109",5555);
             Pout = new PrintWriter(RSocket.getOutputStream(), true);
             in = new BufferedReader(new InputStreamReader(RSocket.getInputStream()));
         } catch (IOException e) {
